@@ -1,0 +1,205 @@
+<html>
+    <head>
+       <title>{{ headtitle|default:'Daksa' }}</title>
+       <link rel="icon" type="image/ico" href="/static/images/q1.png" />
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Pragma" content="no-cache">
+        {% load static %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="{% static 'css/base.css' %}" media="all">
+        <link rel="stylesheet" href="{% static 'css/loader.css' %}" media="all">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        {%block headlib %}
+
+        {% endblock %}
+        {% block style %}
+          <style>
+            .dropdown-submenu {
+                  position: relative;
+            }
+
+            .dropdown-submenu .dropdown-menu {
+               top: 0;
+               left: 100%;
+               margin-top: -1px;
+            }
+          </style>
+        {% endblock %}
+
+     </head>
+     <body>
+
+       <nav class = "navbar navbar-inverse navbar-fixed-top" role = "navigation" >
+
+
+         <div class = "navbar" >
+           <a class="navbar-brand" href="#">
+            <figure>
+   	         <img src="../static/images/logo/adqtm_light.png" style="margin-left: 10px;margin-top: -19px" width="140px" height="45px" />
+             <figcaption style="color: #333;font-size:7.5px;margin-top: -5px;font-weight: bold">aThingz Data Quality Tracking and Monitoring</figcaption>
+            </figure>
+	       </a>
+
+           <ul class="nav navbar-nav navbar-right upperdrop" style="margin-top: 8px">
+             <li><a id="nav-h-a" href=""><span class="	fa fa-file-pdf-o"></span> User Guide</a></li>
+             <li class="dropdown" style="border-left: 1px solid grey;border-right: 1px solid grey">
+               <a id="nav-h-a"  class="dropdown-toggle" data-toggle="dropdown" href="">
+                 <span class="glyphicon glyphicon-user">  </span>   &nbsp;&nbsp;&nbsp;{{ name.username|default:'aThingz' }}&nbsp;&nbsp;&nbsp;&nbsp;
+                 <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                   <li><a >{{ name.first_name }} {{ name.last_name }}</a></li>
+                   <li>{{ name.group}}</li>
+                   <li><a href="{% url 'change_password' %}">Change Password</a></li>
+                </ul>
+             </li>
+             <li><a id="nav-h-a" href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span></a></li>
+             <li><a ></a></li>
+           </ul>
+          </div>
+          <div class = "collapse navbar-collapse" id="menu-nav" style="">
+
+            <a class="navbar-brand" style="width: 50px">
+             &nbsp;
+            </a>
+
+            <ul class = "nav navbar-nav">
+              <li><a class="nav-click-btn" href="{% url 'adqtHome' %}" style="font-size:20px" id="nav-a"><span class="fa fa-home"></span></a></li>
+              <li class="dropdown">
+           <a id="nav-a"  class="dropdown-toggle" data-toggle="dropdown">MDM
+              <span class="caret"></span>
+           </a>
+           <ul class="dropdown-menu">
+
+           </ul>
+         </li>
+         <li class="dropdown">
+           <a id="nav-a"  class="dropdown-toggle" data-toggle="dropdown" >DQM
+              <span class="caret"></span>
+           </a>
+           <ul class="dropdown-menu">
+
+           </ul>
+         </li>
+         <li >
+           <a id="nav-a"  href=""><sup>Bruhas</sup>Planning
+           </a>
+         </li>
+         <li >
+           <a id="nav-a"  href="">Business Rules
+           </a>
+         </li>
+
+         <li class="dropdown">
+           <a id="nav-a" class="dropdown-toggle" data-toggle="dropdown" > Exceptions
+               <span class="caret"></span></a>
+           <ul class="dropdown-menu">
+
+           </ul>
+         </li>
+
+      </ul>
+      <ul class="nav navbar-nav navbar-right" style="margin-right: 15px">
+         <li class="dropdown">
+           <a id="nav-a" class="dropdown-toggle" data-toggle="dropdown">Utilities
+              <span class="caret"></span>
+           </a>
+           <ul class="dropdown-menu">
+             <li><a class="nav-click-btn" href="{% url 'platformConfig' %}">Configurations</a></li>
+           </ul>
+         </li>
+      </ul>
+   </div>
+
+</nav>
+    <br><br><br><br><br>
+
+    {% block content %}
+
+    {% endblock %}
+
+           <div id="loader-wrapper" style="display: none">
+             <div id="loader"></div>
+
+             <div class="loader-section section-left"></div>
+             <div class="loader-section section-right"></div>
+
+           </div>
+</body>
+
+        <!-- Scripts -->
+
+<script src="/static/js/util.js"></script>
+<script src="/static/js/main.js"></script>
+<script>
+
+ function showStuff(element)  {
+    var tabContents = document.getElementsByClassName('tabContent');
+    for (var i = 0; i < tabContents.length; i++) {
+        tabContents[i].style.display = 'none';
+    }
+
+    // change tabsX into tabs-X in order to find the correct tab content
+    var tabContentIdToShow = element.id.replace(/(\d)/g, '-$1');
+    document.getElementById(tabContentIdToShow).style.display = 'block';
+}
+</script>
+
+<script>
+$(document).ready(function(){
+  $('.dropdown-submenu a.test').on("click", function(e){
+    $(this).parent().siblings('.dropdown-submenu').children('ul').hide();
+    $(this).next('ul').toggle();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+});
+
+$(document).mouseup(function(e)
+{
+    var container = $(".sub-drop");
+
+    // if the target of the click isn't the container nor a descendant of the container
+    if (!container.is(e.target) && container.has(e.target).length === 0)
+    {
+        container.hide();
+    }
+});
+</script>
+<script>
+
+function showStuff(id)  {
+    var tabContents = document.getElementsByClassName('tabContent');
+    for (var i = 0; i < tabContents.length; i++) {
+        tabContents[i].style.display = 'none';
+    }
+
+    var tabContentIdToShow = id;
+    document.getElementById(tabContentIdToShow).style.display = 'block';
+}
+
+</script>
+
+<script>
+    $(function () {
+       $('.nav-click-btn').on("click",function () {
+          document.getElementById('loader-wrapper').style.display = "block";
+       });
+
+       $('th a').on("click",function () {
+          document.getElementById('loader-wrapper').style.display = "block";
+       });
+
+
+    });
+</script>
+
+{% block js %}
+
+
+{% endblock %}
+
+</html>
