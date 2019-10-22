@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block style %}
+    <style>
+        * {box-sizing: border-box}
+        body {font-family: "Lato", sans-serif;}
+
+        /* Style the tab */
+        .tab {
+          float: left;
+          border: 1px solid #ccc;
+          background-color: #f1f1f1;
+          width: 30%;
+          height: 385px;
+        }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+          display: block;
+          background-color: inherit;
+          color: black;
+          padding: 22px 16px;
+          width: 100%;
+          border: none;
+          outline: none;
+          text-align: left;
+          cursor: pointer;
+          transition: 0.3s;
+          font-size: 17px;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+          background-color: #ddd;
+        }
+
+        /* Create an active/current "tab button" class */
+        .tab button.active {
+          background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+          float: left;
+          padding: 0px 12px;
+          border: 1px solid #ccc;
+          width: 70%;
+          border-left: none;
+          height: 385px;
+        }
+        table, td, th {
+              border: 1px solid black;
+              border-collapse: collapse;
+            }
+        .mainTable {
+          width: 100%;
+            margin: 14px 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <br><br><br><br><br><br><br>
+    <div class="tab">
+      <button class="tablinks" onclick="openCity(event, 'Equipment')" id="defaultOpen">Equipment</button>
+      <button class="tablinks" onclick="openCity(event, 'Execution')">Execution</button>
+      <button class="tablinks" onclick="openCity(event, 'Partpackage')">Part & Package</button>
+      <button class="tablinks" onclick="openCity(event, 'Forecast')">Forecast</button>
+      <button class="tablinks" onclick="openCity(event, 'Planning')">Planning</button>
+      <button class="tablinks" onclick="openCity(event, 'Rates')">Rates</button>
+    </div>
+
+    <div id="Equipment" class="tabcontent">
+      <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Mode</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+        <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Xyz</th>
+            <th>Value</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+    </div>
+
+    <div id="Execution" class="tabcontent">
+       <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Mode</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+        <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Xyz</th>
+            <th>Value</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+    </div>
+
+    <div id="Partpackage" class="tabcontent">
+       <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Mode</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+        <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Xyz</th>
+            <th>Value</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          <tr>
+            <td>....</td>
+              <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+    </div>
+
+    <div id="Forecast" class="tabcontent">
+       <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Mode</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+        <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Xyz</th>
+            <th>Value</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+    </div>
+
+    <div id="Planning" class="tabcontent">
+       <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Mode</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+        <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Xyz</th>
+            <th>Value</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+    </div>
+
+    <div id="Rates" class="tabcontent">
+       <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Mode</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+        <table class="mainTable">
+          <tr>
+            <td colspan="4" align="right">EDIT</td>
+          </tr>
+          <tr>
+            <th>Xyz</th>
+            <th>Value</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          <tr>
+            <td>....</td>
+            <td>....</td>
+            <td>....</td>
+          </tr>
+        </table>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function openCity(evt, cityName) {
+          var i, tabcontent, tablinks;
+          tabcontent = document.getElementsByClassName("tabcontent");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+          tablinks = document.getElementsByClassName("tablinks");
+          for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+          document.getElementById(cityName).style.display = "block";
+          evt.currentTarget.className += " active";
+        }
+
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+    </script>
+{% endblock %}
