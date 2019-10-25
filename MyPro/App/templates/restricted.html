@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    {% if user.userprofile.role == "manager" %}
+    <h1>You are allowed to access this page</h1>
+    {% endif %}
+    {% if user.userprofile.role == "employee" %}
+        <h3>You are not allowed to access this page. Please login with the account that have access.</h3>
+        <p>Click here to Login</p><a href="{% url 'login' %}">login</a>
+    {% endif %}
+</body>
+</html>
