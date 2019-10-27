@@ -1,0 +1,22 @@
+<!-- templates/home.html-->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<body bgcolor="#00FFFF">
+{% if user.is_authenticated %}
+  Hi <b>{{ user.username }}</b>!
+  <h2 align="center">Welcome to the Application</h2>
+  <h4 align="center">You are viewing this page as you were loggedin into App with App Credentials.</h4>
+  <h4>Proceed further and play with it.. :)</h4>
+  <br><br>
+
+  <p>Want to Exit??? Click <a href="{% url 'logout' %}">logout</a></p>
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}
+</body>
