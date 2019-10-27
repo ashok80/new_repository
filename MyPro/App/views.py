@@ -4,15 +4,18 @@ from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
-import pdb
 from django.views.generic import TemplateView, FormView
-from .forms import SignUpForm, PasswordResetRequestForm
+from .forms import SignUpForm, PasswordResetRequestForm, ConfirmNewPassword
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from datetime import date, timedelta
 import re
 from .models import UserProfile, PasswordResetHistory
 from django.contrib import messages
+from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth import login
+from django.utils import timezone
+from django.utils.crypto import get_random_string
 
 
 def signup(request):
@@ -32,48 +35,63 @@ def signup(request):
 
 
 def user_login(request):
-    if request.method == 'POST':
-        # import pdb;
-        pdb.set_trace()
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
         try:
-            user_obj = User.objects.get(username = username)
-        except:
+            user_obj = User.objects.get(username=username)
+            user_profile = UserProfile.objects.get(user=user_obj)
+        except Exception as e:
             errors = [
-                'User does not exists....!'
+                'User does not exists'
             ]
             res = {
                 'errors': errors
             }
             return render(request, 'registration/login.html', res)
-        
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            print('sucessss')
+
+        pwd_valid = check_password(password, user_obj.password)
+
+        if pwd_valid and not user_profile.is_suspended:
+            login(request, user_obj)
             return redirect('home')
         else:
-            profile = UserProfile.objects.get(user=user_obj)
-            attempts = profile.failure_login_attempts + 1
-            if attempts > 10:
+            if user_profile.failed_login_attempts < 10 and not user_profile.is_suspended:
+                user_profile.failed_login_attempts += 1
+                user_profile.save()
+                attempts = user_profile.failed_login_attempts
                 errors = [
-                    'Too many number of attempts. Account Blocked Please reset password.....!'
+                    '{} failed login attempt'.format(attempts)
                 ]
+                res = {
+                    "errors": errors
+                }
+                return render(request, 'registration/login.html', res)
             else:
-                errors = [
-                    'Password mismatch',
-                    str(attempts)+' / 10 failure attempst of '
-                ]
-            res = {
-                'errors': errors,
-                'username': username
-            }
-            profile.failure_login_attempts = attempts
-            profile.save()
-            return render(request, 'registration/login.html', res)
-         
+                if user_profile.is_suspended:
+                    errors = [
+                        'Your account has been temporarly suspended due to too many failed login attempts.'
+                    ]
+                    res = {
+                        'errors': errors
+                    }
+                    return render(request, 'registration/login.html', res)
+                else:
+                    user_profile.failed_login_attempts = 0
+                    user_profile.is_suspended = True
+                    user_profile.last_suspended = timezone.now()
+                    user_profile.save()
+                    errors = [
+                        'Your account has been temporarly suspended due to too many failed login attempts.'
+                    ]
+                    res = {
+                        'errors': errors
+                    }
+                    return render(request, 'registration/login.html', res)
     else:
         return render(request, 'registration/login.html')
+
 
 # @login_required
 # def my_view(request):
@@ -96,31 +114,31 @@ def user_login(request):
 #             )
 
 # def user_login(request):
-    # model = UserProfile
+# model = UserProfile
 
-    # def roles(self, instance):
-    #     return instance.userprofile.role
-    # if roles == "manager":
-    #     return redirect(request, 'admin')
+# def roles(self, instance):
+#     return instance.userprofile.role
+# if roles == "manager":
+#     return redirect(request, 'admin')
 
-    # if request.user.userprofile.role == "manager":
-    #     pass
-    # if request.user.userprofile.role == "employee":
-    #     pass
-        # return redirect(request,'login')
-        # return redirect(request, '/admin')
-        # # return redirect('restricted.html')
+# if request.user.userprofile.role == "manager":
+#     pass
+# if request.user.userprofile.role == "employee":
+#     pass
+# return redirect(request,'login')
+# return redirect(request, '/admin')
+# # return redirect('restricted.html')
 
-    # if request.method == 'POST':
-    #     username = request.POST.get('username')
-    #     password = request.POST.get('password')
-    #     user = authenticate(username=username,)
-    #     user = user.get('user')
-    #     role = user.get('role')
-    #     if user.role == "manager":
-    #         return redirect('home')
-    #     if user.role == "employee":
-    #         return redirect('admin')
+# if request.method == 'POST':
+#     username = request.POST.get('username')
+#     password = request.POST.get('password')
+#     user = authenticate(username=username,)
+#     user = user.get('user')
+#     role = user.get('role')
+#     if user.role == "manager":
+#         return redirect('home')
+#     if user.role == "employee":
+#         return redirect('admin')
 
 
 def my_view(request):
@@ -154,18 +172,113 @@ def my_view(request):
 
 def change_password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # Important!
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('change_password')
-        else:
-            messages.error(request, 'Please correct the error below.')
+        email = request.POST.get('email')
+        try:
+            user_obj = User.objects.get(email=email)
+        except Exception as e:
+            errors = [
+                'User with {} email was not found'.format(email)
+            ]
+            res = {
+                'errors': errors
+            }
+            return render(request, template_name='accounts/change_password.html', context=res)
+        hash = get_random_string(length=32)
+        user_profile, created = UserProfile.objects.get_or_create(user=user_obj)
+        user_profile.forgot_password_hash = hash
+        user_profile.save()
+
+        errors = [
+            'An email with the recovery hash has been sent to this email {}'.format(email)
+        ]
+        res = {
+            'errors': errors
+        }
+        return render(request, template_name='accounts/change_password.html', context=res)
+
     else:
-        form = PasswordChangeForm(request.user)
-    return render(request, 'accounts/change_password.html', {
-        'form': form
-    })
+        return render(request, 'accounts/change_password.html', {})
 
 
+def confirm_password_hash(request):
+    # REQUIRED URL PARAMS email and hash
+    if request.method == "GET":
+        hash = request.GET.get("hash")
+        email = request.GET.get("email")
+
+        if hash and email:
+            try:
+                user_obj = User.objects.get(email=email)
+            except Exception as e:
+                errors = [
+                    'There was something wrong with the hash you sent please try again.'.format(email)
+                ]
+                res = {
+                    'errors': errors
+                }
+                return render(request, 'accounts/confirm_password_hash.html', context=res)
+            user_profile = UserProfile.objects.get(user=user_obj)
+            if user_profile.forgot_password_hash == hash:
+                form = ConfirmNewPassword()
+                return render(request, 'accounts/confirm_password_hash.html',
+                              context={'form': form, 'user': user_obj.email})
+            else:
+                errors = [
+                    'There was something wrong with the hash you sent please try again.'.format(email)
+                ]
+                res = {
+                    'errors': errors
+                }
+                return render(request, 'accounts/confirm_password_hash.html', context=res)
+        else:
+            errors = [
+                'There was something wrong with the hash you sent please try again.'.format(email)
+            ]
+            res = {
+                'errors': errors
+            }
+            return render(request, 'accounts/confirm_password_hash.html', context=res)
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        form = ConfirmNewPassword(request.POST)
+
+        user_obj = User.objects.get(email=email)
+        previous_passwords, created = PasswordResetHistory.objects.get_or_create(user=user_obj)
+
+        if form.is_valid():
+            hashed_password = make_password(password)
+            print(hashed_password)
+            password_history = [previous_passwords.last_user_password, previous_passwords.second_last_user_password, previous_passwords.third_last_user_password,
+                                previous_passwords.fourth_last_user_password, previous_passwords.fifth_last_user_password]
+            for password in password_history:
+                if hashed_password == password:
+                    errors = [
+                        'You cannot use any of your previous password as the current password.'
+                    ]
+                    res = {
+                        'errors': errors
+                    }
+                    return render(request, 'accounts/confirm_password_hash.html', context=res)
+                else:
+                    user_obj.password = hashed_password
+                    user_obj.save()
+
+                    errors = [
+                        'Your password has been successfully changed.'
+                    ]
+                    res = {
+                        'errors': errors
+                    }
+                    return render(request, 'accounts/confirm_password_hash.html', context=res)
+        else:
+            form = ConfirmNewPassword()
+            errors = [
+                'You cannot use any of your previous password as the current password.'
+            ]
+            res = {
+                'errors': errors,
+                'form': form,
+                'user': email
+            }
+            return render(request, 'accounts/confirm_password_hash.html', context=res)

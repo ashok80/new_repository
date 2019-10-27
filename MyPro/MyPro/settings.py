@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-import sql_server
+from django.utils.timezone import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,9 +36,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'MyPro',
     'App',
-    'crispy_forms'
+    'crispy_forms',
+    'djcelery',
 ]
+
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = 'django://'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -77,16 +83,12 @@ WSGI_APPLICATION = 'MyPro.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'athingzdev',
-        'USER': 'AZ_DEV_USER@adqtmstaging',
-        'PASSWORD': '4BuildersOn!y',
-        'HOST': 'adqtmstaging.database.windows.net',
-        'PORT': '',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 13 for SQL Server'
-        }
-
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ashoksession',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432',
     },
 }
 
@@ -149,3 +151,15 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+
+CELERYBEAT_SCHEDULE = {
+    'unexpire-every-5-minutes': {
+        'task': 'App.tasks.unexpire',
+        'schedule': timedelta(minutes=10),
+    },
+
+    'suspend-user-after-3-months': {
+        'task': 'App.tasks.expire_inactive-users',
+        'schedule': timedelta(days=91),
+    }
+}

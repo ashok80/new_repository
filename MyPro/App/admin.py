@@ -3,18 +3,17 @@ from . import models
 # from App import models
 from App.models import Products
 from App.models import Supplier
-from App.models import UserProfile
+from App.models import UserProfile, PasswordResetHistory
 # from App.models import Account
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-
 # Register your models here.
 class ProfileInline(admin.StackedInline):
     model = UserProfile
-    can_delete = False
     verbose_name_plural = 'User Profile'
-    fk_name = 'user'
+    raw_id_fields = ['user']
+    fields = ['user', 'location', 'OrgName', 'role', 'failed_login_attempts', 'is_suspended', 'last_suspended']
 
 
 class CustomUserAdmin(UserAdmin):
@@ -36,6 +35,7 @@ class CustomUserAdmin(UserAdmin):
 admin.site.register(Supplier)
 admin.site.register(Products)
 admin.site.register(UserProfile)
+admin.site.register(PasswordResetHistory)
 
 
 admin.site.unregister(User)

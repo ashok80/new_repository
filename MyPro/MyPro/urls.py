@@ -27,5 +27,6 @@ urlpatterns = [
     url(r'^login/', views.user_login, name='login'),
     url(r'^restricted/', TemplateView.as_view(template_name='restricted.html'), name='restricted'),
     # url(r'^password/$', views.change_password, name='change_password'),
-    url(r'^password/', TemplateView.as_view(template_name='change_password.html'), name='password'),
+    url(r'^password/', views.change_password, name='password'),
+    url(r'^confirm-password-hash/', views.confirm_password_hash, name='confirm-password-hash'),
 ]

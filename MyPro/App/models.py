@@ -2,6 +2,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator
+
 
 # from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 # from django.urls import reverse
@@ -107,10 +109,15 @@ class Products(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete='CASCADE')
-    location = models.CharField(max_length=100, default='')
-    OrgName = models.CharField(max_length=100, default='')
-    role = models.CharField(max_length=100,default='')
-    failure_login_attempts = models.IntegerField('Failure Attempts', default=0)
+    location = models.CharField(max_length=100, default='', null=True, blank=True)
+    OrgName = models.CharField(max_length=100, default='', null=True, blank=True)
+    role = models.CharField(max_length=100,default='', null=True, blank=True)
+
+    failed_login_attempts = models.IntegerField('Failure Attempts', default=0, validators=[MaxValueValidator(10)])
+    is_suspended = models.BooleanField(null=True, blank=True, default=False)
+    last_suspended = models.DateTimeField(null=True, blank=True)
+
+    forgot_password_hash = models.CharField(max_length=1000, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'email', ]
@@ -119,11 +126,31 @@ class UserProfile(models.Model):
         return self.user.username
 
 
-class PasswordResetHistory(models.Model):
-    user = models.OneToOneField(User, on_delete='CASCADE')
-    login_time = models.TimeField(auto_now=True)
-    password = models.CharField(max_length=500)
+class PreviousPassword(models.Model):
+    class Meta:
+        verbose_name_plural = 'Pervious Passwords'
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    f_password = models.CharField(max_length=255, null=True, blank=True)
+    s_password = models.CharField(max_length=255, null=True, blank=True)
+    t_password = models.CharField(max_length=255, null=True, blank=True)
+    fo_password = models.CharField(max_length=255, null=True, blank=True)
+    fi_password = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return self.user.username
+        return "# {}".format(self.id)
+
+
+class PasswordResetHistory(models.Model):
+    class Meta:
+        verbose_name_plural = 'Password Reset History'
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    last_user_password = models.CharField(max_length=255, null=True, blank=True)
+    second_last_user_password = models.CharField(max_length=255, null=True, blank=True)
+    third_last_user_password = models.CharField(max_length=255, null=True, blank=True)
+    fourth_last_user_password = models.CharField(max_length=255, null=True, blank=True)
+    fifth_last_user_password = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "# {}".format(self.id)
 
