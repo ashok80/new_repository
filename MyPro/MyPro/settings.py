@@ -25,7 +25,7 @@ SECRET_KEY = 'tsf00kkjeswy_m-)j!+#k$mw=ed&xts+=^_)dvcy!mv#4e=s+w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -152,10 +152,12 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
 
+CELERY_IMPORTS = ['MyPro.tasks']
+
 CELERYBEAT_SCHEDULE = {
     'unexpire-every-5-minutes': {
-        'task': 'App.tasks.unexpire',
-        'schedule': timedelta(minutes=10),
+        'task': 'MyPro.tasks.add',
+        'schedule': timedelta(seconds=5),
     },
 
     'suspend-user-after-3-months': {
@@ -163,3 +165,4 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(days=91),
     }
 }
+
